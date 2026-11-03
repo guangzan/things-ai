@@ -8,7 +8,7 @@ English: [COMPATIBILITY.md](COMPATIBILITY.md)
 - Things 数据库 schema 版本 `29`
 - Rust 1.89+（2024 edition）
 
-Things 并未公布稳定的 SQLite schema。读取器使用了防御性的列默认值，但未来的 Things 版本仍可能更改表名或列名。升级 Things 后请运行 `things doctor`。
+Things 并未公布稳定的 SQLite schema。读取器使用了防御性的列默认值，但未来的 Things 版本仍可能更改表名或列名。升级 Things 后请运行 `ta doctor`。
 
 启动时，读取器会校验它所依赖的每张表和每一列是否存在。若不匹配，会快速失败并返回命名缺失表 / 列的 `unsupported` 错误，而不是静默返回空结果或部分结果。
 
@@ -61,9 +61,9 @@ Things 在 URL 中用逗号分隔标签。包含逗号的标签名会被拒绝�
 
 ### 删除
 
-删除是 `AppleScript` 操作，会进入 Things Trash。单个条目永远不会被永久抹除；`things empty-trash --yes` 是唯一的永久删除方式，并且始终需要显式确认。
+删除是 `AppleScript` 操作，会进入 Things Trash。单个条目永远不会被永久抹除；`ta empty-trash --yes` 是唯一的永久删除方式，并且始终需要显式确认。
 
-Things 的 `AppleScript` 字典无法定位已经在 Trash 中的条目：`to do id "<id>"` 会以错误 `-1728` 失败，也没有命令能单独暴露 Trash 内容。因此，删除一个已经在 Trash 中的条目会返回 `conflict` 错误，并指向 `things empty-trash --yes`，而不是继续尝试该操作。
+Things 的 `AppleScript` 字典无法定位已经在 Trash 中的条目：`to do id "<id>"` 会以错误 `-1728` 失败，也没有命令能单独暴露 Trash 内容。因此，删除一个已经在 Trash 中的条目会返回 `conflict` 错误，并指向 `ta empty-trash --yes`，而不是继续尝试该操作。
 
 ### 标题分组（Headings）
 

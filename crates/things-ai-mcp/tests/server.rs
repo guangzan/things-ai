@@ -1,7 +1,7 @@
 use serde_json::{Value, json};
 use tempfile::TempDir;
-use things_core::{Config, Service};
-use things_mcp::{McpConfig, ThingsServer};
+use things_ai_core::{Config, Service};
+use things_ai_mcp::{McpConfig, ThingsServer};
 
 struct Fixture {
     _directory: TempDir,
@@ -169,6 +169,7 @@ async fn agent_brief_explains_repeating_template_resolution() {
     let fixture = Fixture::new();
     let server = fixture.server(true);
     let brief = call(&server, "get_agent_brief", json!({}));
+    assert_eq!(brief["identity"], "things-ai");
     let rules = brief["rules"].as_array().expect("rules");
     assert!(
         rules.iter().any(|rule| {
@@ -302,7 +303,7 @@ async fn closed_project_tasks_are_hidden_unless_requested() {
 #[tokio::test]
 async fn search_accepts_the_same_filters_as_list() {
     let fixture = Fixture::new();
-    let deadline = things_core::dates::encode_date(
+    let deadline = things_ai_core::dates::encode_date(
         chrono::NaiveDate::from_ymd_opt(2026, 10, 24).expect("deadline"),
     );
     {
@@ -455,7 +456,7 @@ async fn edit_reminder_keeps_an_existing_date_and_rejects_unscheduled_items() {
         connection
             .execute(
                 "UPDATE TMTask SET startDate = ?1 WHERE uuid = 'todo-1'",
-                [things_core::dates::encode_date(date)],
+                [things_ai_core::dates::encode_date(date)],
             )
             .expect("start date");
     }

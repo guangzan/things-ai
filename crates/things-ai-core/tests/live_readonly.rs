@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use things_core::{
+use things_ai_core::{
     Config, ItemQuery, ItemStatus, ItemType, Service, View,
     models::{Item, Tag, Todo},
     query::{Filter, SortField, SortOrder},
@@ -11,7 +11,7 @@ fn live_database() -> Option<PathBuf> {
     let container = base
         .home_dir()
         .join("Library/Group Containers")
-        .join(things_core::config::GROUP_CONTAINER);
+        .join(things_ai_core::config::GROUP_CONTAINER);
     let entries = std::fs::read_dir(container).ok()?;
     for entry in entries.flatten() {
         if !entry

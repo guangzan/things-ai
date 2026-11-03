@@ -6,25 +6,25 @@ use chrono::NaiveDate;
 use clap::{ArgAction, Args, Parser, Subcommand, ValueEnum};
 use serde::Serialize;
 use serde_json::{Value, json};
-use things_core::error::ErrorCode;
-use things_core::models::{Area, Heading, Item, ItemStatus, ItemType, Tag, View};
-use things_core::query::{Filter, ItemQuery, Page, SortField, SortOrder};
-use things_core::service::{CreateProject, EditItem, WriteOptions, WriteResult};
-use things_core::{Config, CreateTodo, Database, Error, Result, Service};
-use things_mcp::{McpConfig, ThingsServer};
+use things_ai_core::error::ErrorCode;
+use things_ai_core::models::{Area, Heading, Item, ItemStatus, ItemType, Tag, View};
+use things_ai_core::query::{Filter, ItemQuery, Page, SortField, SortOrder};
+use things_ai_core::service::{CreateProject, EditItem, WriteOptions, WriteResult};
+use things_ai_core::{Config, CreateTodo, Database, Error, Result, Service};
+use things_ai_mcp::{McpConfig, ThingsServer};
 
 #[derive(Debug, Parser)]
 #[command(
-    name = "things",
+    name = "ta",
     version,
-    about = "AI-first Things 3 CLI with verified writes and an MCP server",
-    long_about = "Read the live Things 3 database safely, query it with boolean and regex filters, \
-                  and mutate it through the official URL scheme or AppleScript. Every mutation can \
+    about = "Things AI: AI-first Things 3 CLI with verified writes and an MCP server",
+    long_about = "Things AI reads the live Things 3 database safely, queries it with boolean and regex filters, \
+                  and mutates it through the official URL scheme or AppleScript. Every mutation can \
                   be verified against the database."
 )]
 struct Cli {
     /// Explicit path to Things' main.sqlite.
-    #[arg(long, global = true, env = "THINGSDB")]
+    #[arg(long, global = true, env = "THINGS_AI_DB")]
     db: Option<PathBuf>,
 
     /// Disable every write tool and command.
@@ -64,11 +64,11 @@ struct Cli {
     strict_tags: bool,
 
     /// Override the post-write verification timeout.
-    #[arg(long, global = true, env = "THINGS_VERIFY_TIMEOUT_MS")]
+    #[arg(long, global = true, env = "THINGS_AI_VERIFY_TIMEOUT_MS")]
     verify_timeout_ms: Option<u64>,
 
     /// Override the post-write verification polling interval.
-    #[arg(long, global = true, env = "THINGS_VERIFY_POLL_MS")]
+    #[arg(long, global = true, env = "THINGS_AI_VERIFY_POLL_MS")]
     verify_poll_ms: Option<u64>,
 
     #[command(subcommand)]
@@ -130,7 +130,7 @@ enum Command {
     /// Reopen a completed or canceled item.
     Reopen { target: String },
     /// Move an item to Things Trash. An item that is already in the Trash
-    /// cannot be deleted again; use `things empty-trash` instead.
+    /// cannot be deleted again; use `ta empty-trash` instead.
     Delete { target: String },
     /// Permanently delete everything in Things Trash.
     EmptyTrash,
@@ -432,7 +432,7 @@ struct EditArgs {
     area: Option<String>,
     #[arg(long)]
     heading: Option<String>,
-    /// completed or canceled; use `things reopen` to reopen.
+    /// completed or canceled; use `ta reopen` to reopen.
     #[arg(long)]
     status: Option<String>,
     #[arg(long)]
@@ -851,7 +851,7 @@ fn run_doctor(config: &Config, explicit_database: Option<&Path>, mode: OutputMod
         "database_source": selection
             .as_ref()
             .ok()
-            .map(things_core::DatabaseSelection::source_name),
+            .map(things_ai_core::DatabaseSelection::source_name),
         "database_readable": database_readable,
         "database_error": database_error,
         "schema_version": schema_version,
@@ -1144,7 +1144,7 @@ fn bool_pair(yes: bool, no: bool, field: &str) -> Result<Option<bool>> {
 
 fn agent_brief() -> Value {
     json!({
-        "identity": "things",
+        "identity": "things-ai",
         "purpose": "Read and modify the user's local Things 3 data through a stable, verified interface.",
         "principles": [
             "Reads are SQLite read-only queries; direct database writes are never performed.",
@@ -1153,32 +1153,32 @@ fn agent_brief() -> Value {
             "Use stable ids from list/search/get; 4+ character id prefixes are accepted.",
             "Use --dry-run to inspect the generated URL without changing Things.",
             "Destructive commands still require --yes even when --dry-run is set.",
-            "Use `things doctor` when database permissions or URL authentication fail.",
-            "Repeating-rule writes are intentionally unsupported; use `things repeat <id>`.",
-            "Repeating templates are omitted from ordinary lists and belong to `things repeating`. When an instance and template share a title, title lookups prefer the instance; address the template by id. Explicit `--trashed` listings and the logbook report stored rows literally.",
-            "`things empty-trash --yes` is the only permanent delete; headings are read-only.",
-            "Deleting an item that is already in Things Trash returns a conflict error; only `things empty-trash --yes` removes it.",
+            "Use `ta doctor` when database permissions or URL authentication fail.",
+            "Repeating-rule writes are intentionally unsupported; use `ta repeat <id>`.",
+            "Repeating templates are omitted from ordinary lists and belong to `ta repeating`. When an instance and template share a title, title lookups prefer the instance; address the template by id. Explicit `--trashed` listings and the logbook report stored rows literally.",
+            "`ta empty-trash --yes` is the only permanent delete; headings are read-only.",
+            "Deleting an item that is already in Things Trash returns a conflict error; only `ta empty-trash --yes` removes it.",
             "For import, read both created and updated per-item results. Mixed-field updates report fields-not-verified even if the status landed; only status-only updates can be fully confirmed. Checklist-item updates support status only.",
             "Import update destinations are preflighted as references, so a valid move elsewhere is accepted. To-dos use list/list-id and heading/heading-id; projects use area/area-id. Unknown ids, empty ids, wrong-type destination fields, and mismatched nested parents fail before sending.",
             "Search before retrying not-found, ambiguous, dry-run, no-verify, or fields-not-verified import entries."
         ],
         "suggested_workflow": [
-            "things today --json --limit 20",
-            "things search \"term\" --json",
-            "things show <id> --json",
-            "things edit <id> --deadline 2026-10-20 --json",
-            "things done <id> --json",
-            "things import payload.json --dry-run --json",
-            "things import payload.json --json"
+            "ta today --json --limit 20",
+            "ta search \"term\" --json",
+            "ta show <id> --json",
+            "ta edit <id> --deadline 2026-10-20 --json",
+            "ta done <id> --json",
+            "ta import payload.json --dry-run --json",
+            "ta import payload.json --json"
         ],
-        "mcp": "Run `things mcp`; configure it as a stdio MCP server."
+        "mcp": "Run `ta mcp`; configure it as a stdio MCP server."
     })
 }
 
 fn print_error_json(
     code: ErrorCode,
     message: &str,
-    candidates: Option<&[things_core::error::Candidate]>,
+    candidates: Option<&[things_ai_core::error::Candidate]>,
     candidates_truncated: bool,
 ) {
     let value = json!({

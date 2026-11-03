@@ -4,11 +4,11 @@ English: [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ## 包（Crates）
 
-`things-core` 包含领域模型、只读数据库访问、URL scheme 构建器、`AppleScript` 自动化、校验，以及共享的应用服务。
+`things-ai-core` 包含领域模型、只读数据库访问、URL scheme 构建器、`AppleScript` 自动化、校验，以及共享的应用服务。
 
-`things`（位于 `crates/things-cli`）是基于 `clap` 的命令行前端。它把 CLI 参数映射为核心查询与写入请求，并渲染 text、JSON 或 NDJSON。
+`ta`（位于 `crates/things-ai`）是基于 `clap` 的命令行前端。它把 CLI 参数映射为核心查询与写入请求，并渲染 text、JSON 或 NDJSON。
 
-`things-mcp` 通过 MCP stdio 暴露同一套服务。每次请求都会打开自己的只读 SQLite 连接，避免跨线程共享 `rusqlite::Connection`。
+`things-ai-mcp` 通过 MCP stdio 暴露同一套服务。每次请求都会打开自己的只读 SQLite 连接，避免跨线程共享 `rusqlite::Connection`。
 
 ## 安全边界
 

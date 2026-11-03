@@ -1,9 +1,9 @@
 ---
-name: things
-description: Operate Things 3 through the local `things` CLI or MCP server with verified writes, safe id resolution, and explicit handling of Things limitations.
+name: things-ai
+description: Operate Things 3 through the local `ta` CLI or MCP server with verified writes, safe id resolution, and explicit handling of Things limitations.
 ---
 
-# Things 3
+# Things AI
 
 Use this skill when the user asks to inspect, search, create, edit, complete,
 reopen, delete, tag, organize into areas, empty the Trash, or import Things 3
@@ -11,7 +11,7 @@ items.
 
 ## Preconditions
 
-1. Run `things doctor --json`.
+1. Run `ta doctor --json`.
 2. Require `database_readable: true`.
 3. For writes, require `things_app_installed: true` and `token_configured: true`
    when the operation uses `things:///update`.
@@ -20,11 +20,11 @@ items.
 
 ## Operating rules
 
-- Prefer `things mcp` when the client supports MCP; otherwise use the CLI.
+- Prefer `ta mcp` when the client supports MCP; otherwise use the CLI.
 - Use `--json` for every machine-read call.
 - Start with a small `--limit`.
 - Listings carry at most 200 characters of notes and set `notes_truncated`;
-  pass `--notes` for full text in a list, or use `things show <id>` for one item.
+  pass `--notes` for full text in a list, or use `ta show <id>` for one item.
 - Resolve by stable id returned from `list`, `search`, or `get`.
 - Never guess when an operation returns `ambiguous`; choose a returned id or ask.
 - Use `--dry-run` before a complex or bulk write.
@@ -35,16 +35,16 @@ items.
 ## Recommended workflow
 
 ```sh
-things doctor --json
-things today --json --limit 20
-things search "term" --json --limit 10
-things show <id> --json
-things edit <id> --deadline 2026-10-24 --dry-run --json
-things edit <id> --deadline 2026-10-24 --json
-things edit <id> --reminder 09:30 --dry-run --json
-things edit <id> --reminder 09:30 --json
-things area --json
-things trash --json --limit 20
+ta doctor --json
+ta today --json --limit 20
+ta search "term" --json --limit 10
+ta show <id> --json
+ta edit <id> --deadline 2026-10-24 --dry-run --json
+ta edit <id> --deadline 2026-10-24 --json
+ta edit <id> --reminder 09:30 --dry-run --json
+ta edit <id> --reminder 09:30 --json
+ta area --json
+ta trash --json --limit 20
 ```
 
 ## Limitations to state explicitly
@@ -57,10 +57,10 @@ things trash --json --limit 20
   is not changed accidentally.
 - Repeating items reject `when`, `reminder`, `deadline`, and status changes.
 - Repeating templates stay out of ordinary lists, including bare
-  `--not-trashed` listings; use `things repeating` and address templates by
+  `--not-trashed` listings; use `ta repeating` and address templates by
   full id. When an instance and template share a title, title lookups choose
   the instance.
-- Recurrence rules are edited in Things; use `things repeat <id>`.
+- Recurrence rules are edited in Things; use `ta repeat <id>`.
 - The URL scheme cannot move an existing item to Inbox.
 - Delete moves to Things Trash and requires confirmation; `empty-trash` is
   permanent and also requires `--yes`.
@@ -77,8 +77,8 @@ things trash --json --limit 20
 Validate the JSON array first:
 
 ```sh
-things import payload.json --dry-run --json
-things import payload.json --json
+ta import payload.json --dry-run --json
+ta import payload.json --json
 ```
 
 Read both returned arrays. Each top-level or nested to-do/project create is in

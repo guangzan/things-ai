@@ -4,7 +4,7 @@ build:
 	cargo build --workspace
 
 release:
-	cargo build --release -p things
+	cargo build --release -p things-ai
 
 test:
 	cargo test --workspace
@@ -19,4 +19,4 @@ lint:
 	cargo clippy --workspace --all-targets -- -D warnings
 
 install:
-	cargo install --path crates/things-cli
+	cargo install --path crates/things-ai

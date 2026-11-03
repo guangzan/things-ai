@@ -1,7 +1,7 @@
 use chrono::NaiveDate;
 use rusqlite::{Connection, params};
 use tempfile::TempDir;
-use things_core::{
+use things_ai_core::{
     Config, EditItem, ItemQuery, ItemStatus, ItemType, Service, View, WriteOptions,
     dates::{decode_date, encode_date},
     models::Item,
@@ -230,7 +230,7 @@ fn incompatible_schema_fails_loudly() {
         .expect("drop column");
     drop(connection);
     let error = Service::open(Config::default(), Some(&fixture.path)).unwrap_err();
-    assert_eq!(error.code(), things_core::error::ErrorCode::Unsupported);
+    assert_eq!(error.code(), things_ai_core::error::ErrorCode::Unsupported);
     assert!(error.to_string().contains("TMChecklistItem"));
 }
 
@@ -465,7 +465,7 @@ fn title_resolution_prefers_instances_but_falls_back_to_templates() {
     );
     assert_eq!(service.get("Template only").unwrap().id(), "template-only");
     let error = service.get("Cross-kind title").unwrap_err();
-    assert_eq!(error.code(), things_core::error::ErrorCode::Ambiguous);
+    assert_eq!(error.code(), things_ai_core::error::ErrorCode::Ambiguous);
     assert_eq!(
         error
             .candidates()
@@ -497,7 +497,7 @@ fn ambiguous_title_reports_truncated_candidates() {
 
     let service = fixture.service();
     let error = service.get("Shared ambiguous title").unwrap_err();
-    assert_eq!(error.code(), things_core::error::ErrorCode::Ambiguous);
+    assert_eq!(error.code(), things_ai_core::error::ErrorCode::Ambiguous);
     assert_eq!(error.candidates().map(<[_]>::len), Some(25));
     assert!(error.candidates_truncated());
 }
@@ -518,7 +518,7 @@ fn evening_is_separate_from_the_start_bucket() {
     let Item::Todo(todo) = service.get("todo-report").unwrap() else {
         panic!("expected todo");
     };
-    assert_eq!(todo.start_bucket, things_core::StartBucket::Anytime);
+    assert_eq!(todo.start_bucket, things_ai_core::StartBucket::Anytime);
     assert_eq!(todo.start_bucket_code, 1);
     assert!(todo.evening);
 }
@@ -577,9 +577,9 @@ fn active_views_hide_open_todos_in_closed_projects() {
     let all = service
         .list(&ItemQuery {
             view: Some(View::Anytime),
-            filter: things_core::Filter {
+            filter: things_ai_core::Filter {
                 include_closed_project_tasks: true,
-                ..things_core::Filter::default()
+                ..things_ai_core::Filter::default()
             },
             ..ItemQuery::default()
         })
@@ -1077,8 +1077,8 @@ fn container_filters_fail_instead_of_silently_returning_nothing() {
             })
             .unwrap_err();
         assert!(
-            error.code() == things_core::error::ErrorCode::NotFound
-                || error.code() == things_core::error::ErrorCode::InvalidInput,
+            error.code() == things_ai_core::error::ErrorCode::NotFound
+                || error.code() == things_ai_core::error::ErrorCode::InvalidInput,
             "{message}: {}",
             error.code().as_str()
         );
@@ -1243,7 +1243,7 @@ fn project_status_edits_require_yes_even_for_dry_run() {
         WriteOptions::default(),
     ] {
         let error = service.edit(&edit, &options).unwrap_err();
-        assert_eq!(error.code(), things_core::error::ErrorCode::Conflict);
+        assert_eq!(error.code(), things_ai_core::error::ErrorCode::Conflict);
         assert!(error.to_string().contains("--yes"));
     }
 
@@ -1298,7 +1298,10 @@ fn get_returns_related_data_and_resolution_is_safe() {
     let resolved = service.get("todo-repo").unwrap();
     assert_eq!(resolved.id(), "todo-report");
     let ambiguous = service.get("item").unwrap_err();
-    assert_eq!(ambiguous.code(), things_core::error::ErrorCode::Ambiguous);
+    assert_eq!(
+        ambiguous.code(),
+        things_ai_core::error::ErrorCode::Ambiguous
+    );
     assert!(
         ambiguous
             .candidates()
@@ -1329,10 +1332,10 @@ fn dry_run_with_tag_creation_does_not_write() {
     };
     let result = service
         .create_todo(
-            things_core::CreateTodo {
+            things_ai_core::CreateTodo {
                 title: "Dry run".to_string(),
                 tags: vec!["new-tag".to_string()],
-                ..things_core::CreateTodo::default()
+                ..things_ai_core::CreateTodo::default()
             },
             &options,
         )
@@ -1359,11 +1362,11 @@ fn todo_reminder_is_encoded_in_when_and_verified_from_the_database() {
     let service = fixture.service();
     let result = service
         .create_todo(
-            things_core::CreateTodo {
+            things_ai_core::CreateTodo {
                 title: "Reminder create".to_string(),
                 when: Some("2026-10-09".to_string()),
                 reminder: Some("09:00".to_string()),
-                ..things_core::CreateTodo::default()
+                ..things_ai_core::CreateTodo::default()
             },
             &WriteOptions {
                 dry_run: true,
@@ -1386,15 +1389,15 @@ fn todo_reminder_defaults_to_today_and_rejects_date_buckets() {
     };
     let created = service
         .create_todo(
-            things_core::CreateTodo {
+            things_ai_core::CreateTodo {
                 title: "Today reminder".to_string(),
                 reminder: Some("18:30".to_string()),
-                ..things_core::CreateTodo::default()
+                ..things_ai_core::CreateTodo::default()
             },
             &options,
         )
         .unwrap();
-    let today = things_core::dates::today().format("%Y-%m-%d");
+    let today = things_ai_core::dates::today().format("%Y-%m-%d");
     assert!(
         created.url.contains(&format!("when={today}%4018%3A30")),
         "{}",
@@ -1404,16 +1407,16 @@ fn todo_reminder_defaults_to_today_and_rejects_date_buckets() {
     for when in ["anytime", "someday"] {
         let error = service
             .create_todo(
-                things_core::CreateTodo {
+                things_ai_core::CreateTodo {
                     title: "Invalid reminder".to_string(),
                     when: Some(when.to_string()),
                     reminder: Some("09:00".to_string()),
-                    ..things_core::CreateTodo::default()
+                    ..things_ai_core::CreateTodo::default()
                 },
                 &options,
             )
             .unwrap_err();
-        assert_eq!(error.code(), things_core::error::ErrorCode::Conflict);
+        assert_eq!(error.code(), things_ai_core::error::ErrorCode::Conflict);
     }
 }
 
@@ -1460,7 +1463,7 @@ fn todo_edit_reminder_rejects_unscheduled_items_and_invalid_times() {
             &options,
         )
         .unwrap_err();
-    assert_eq!(error.code(), things_core::error::ErrorCode::Conflict);
+    assert_eq!(error.code(), things_ai_core::error::ErrorCode::Conflict);
 
     let error = service
         .edit(
@@ -1472,7 +1475,7 @@ fn todo_edit_reminder_rejects_unscheduled_items_and_invalid_times() {
             &options,
         )
         .unwrap_err();
-    assert_eq!(error.code(), things_core::error::ErrorCode::InvalidDate);
+    assert_eq!(error.code(), things_ai_core::error::ErrorCode::InvalidDate);
 }
 
 #[test]
@@ -1493,7 +1496,7 @@ fn todo_edit_reminder_with_when_updates_the_date_and_time_together() {
             },
         )
         .unwrap();
-    let tomorrow = (things_core::dates::today() + chrono::Duration::days(1))
+    let tomorrow = (things_ai_core::dates::today() + chrono::Duration::days(1))
         .format("%Y-%m-%d")
         .to_string();
     assert!(
@@ -1520,7 +1523,7 @@ fn todo_edit_rejects_clear_reminder_without_changing_the_schedule() {
             },
         )
         .unwrap_err();
-    assert_eq!(error.code(), things_core::error::ErrorCode::Unsupported);
+    assert_eq!(error.code(), things_ai_core::error::ErrorCode::Unsupported);
 }
 
 #[test]
@@ -1537,7 +1540,7 @@ fn project_edit_rejects_project_and_checklist_fields() {
         ..EditItem::default()
     };
     let error = service.edit(&project_as_parent, &options).unwrap_err();
-    assert_eq!(error.code(), things_core::error::ErrorCode::InvalidInput);
+    assert_eq!(error.code(), things_ai_core::error::ErrorCode::InvalidInput);
 
     let checklist = EditItem {
         target: "project-quarterly".to_string(),
@@ -1545,7 +1548,7 @@ fn project_edit_rejects_project_and_checklist_fields() {
         ..EditItem::default()
     };
     let error = service.edit(&checklist, &options).unwrap_err();
-    assert_eq!(error.code(), things_core::error::ErrorCode::InvalidInput);
+    assert_eq!(error.code(), things_ai_core::error::ErrorCode::InvalidInput);
 }
 
 #[test]
@@ -1565,7 +1568,7 @@ fn invalid_import_shapes_are_rejected_before_sending() {
         let error = service.import(payload, &options).unwrap_err();
         assert_eq!(
             error.code(),
-            things_core::error::ErrorCode::InvalidInput,
+            things_ai_core::error::ErrorCode::InvalidInput,
             "{payload}"
         );
     }
@@ -1618,7 +1621,7 @@ fn dry_run_import_reports_nested_updates_without_writing() {
     assert_eq!(result.updated[0].title, "Write report");
     assert_eq!(
         result.updated[0].wanted_status,
-        Some(things_core::ItemStatus::Completed)
+        Some(things_ai_core::ItemStatus::Completed)
     );
     assert_eq!(result.updated[0].reason.as_deref(), Some("dry-run"));
     assert!(!result.updated[0].confirmed);
@@ -1637,7 +1640,7 @@ fn import_update_id_type_mismatch_is_rejected_before_sending() {
             },
         )
         .unwrap_err();
-    assert_eq!(error.code(), things_core::error::ErrorCode::InvalidInput);
+    assert_eq!(error.code(), things_ai_core::error::ErrorCode::InvalidInput);
     assert!(error.to_string().contains("does not match"));
 }
 
@@ -1665,7 +1668,7 @@ fn import_update_rejects_restricted_fields_on_repeating_items() {
             .unwrap_err();
         assert_eq!(
             error.code(),
-            things_core::error::ErrorCode::Unsupported,
+            things_ai_core::error::ErrorCode::Unsupported,
             "{attributes}"
         );
     }
@@ -1701,9 +1704,9 @@ fn import_update_rejects_wrong_field_types_before_sending() {
         let expected = if attributes.starts_with(r#"{"creation-date""#)
             || attributes.starts_with(r#"{"completion-date""#)
         {
-            things_core::error::ErrorCode::InvalidDate
+            things_ai_core::error::ErrorCode::InvalidDate
         } else {
-            things_core::error::ErrorCode::InvalidInput
+            things_ai_core::error::ErrorCode::InvalidInput
         };
         assert_eq!(error.code(), expected, "{attributes}");
     }
@@ -1745,7 +1748,7 @@ fn import_update_list_id_accepts_only_existing_things_ids() {
                 },
             )
             .unwrap_err();
-        assert_eq!(error.code(), things_core::error::ErrorCode::Conflict);
+        assert_eq!(error.code(), things_ai_core::error::ErrorCode::Conflict);
         assert!(error.to_string().contains("does not identify"));
     }
 }
@@ -1777,7 +1780,7 @@ fn import_update_rejects_unknown_or_malformed_destinations_before_sending() {
             .unwrap_err();
         assert_eq!(
             error.code(),
-            things_core::error::ErrorCode::Conflict,
+            things_ai_core::error::ErrorCode::Conflict,
             "{attributes}: {error}"
         );
     }
@@ -1814,7 +1817,7 @@ fn import_update_id_fields_require_things_ids_and_matching_types() {
             .unwrap_err();
         assert_eq!(
             error.code(),
-            things_core::error::ErrorCode::Conflict,
+            things_ai_core::error::ErrorCode::Conflict,
             "{attributes}: {error}"
         );
     }
@@ -1862,7 +1865,7 @@ fn import_update_destination_fields_must_match_the_item_type() {
             .unwrap_err();
         assert_eq!(
             error.code(),
-            things_core::error::ErrorCode::Conflict,
+            things_ai_core::error::ErrorCode::Conflict,
             "{item_type} {attributes}: {error}"
         );
         assert!(
@@ -1924,7 +1927,7 @@ fn import_update_validates_nested_todo_parent_context() {
             },
         )
         .unwrap_err();
-    assert_eq!(error.code(), things_core::error::ErrorCode::Conflict);
+    assert_eq!(error.code(), things_ai_core::error::ErrorCode::Conflict);
     assert!(error.to_string().contains("does not belong"));
 }
 
@@ -1971,7 +1974,7 @@ fn checklist_update_dry_run_resolves_the_parent_and_rejects_other_fields() {
             },
         )
         .unwrap_err();
-    assert_eq!(error.code(), things_core::error::ErrorCode::Unsupported);
+    assert_eq!(error.code(), things_ai_core::error::ErrorCode::Unsupported);
 }
 
 #[test]
@@ -1994,7 +1997,7 @@ fn checklist_update_rejects_a_parent_that_does_not_own_it() {
             },
         )
         .unwrap_err();
-    assert_eq!(error.code(), things_core::error::ErrorCode::Conflict);
+    assert_eq!(error.code(), things_ai_core::error::ErrorCode::Conflict);
     assert!(error.to_string().contains("does not belong"));
 }
 
@@ -2150,7 +2153,7 @@ fn resolution_never_matches_items_inside_the_trash() {
     let fixture = Fixture::new();
     let service = fixture.service();
     let error = service.get("Trashed item").unwrap_err();
-    assert_eq!(error.code(), things_core::error::ErrorCode::NotFound);
+    assert_eq!(error.code(), things_ai_core::error::ErrorCode::NotFound);
 
     // The full id still works, so trashed items stay addressable.
     let item = service.get("todo-trashed").unwrap();
@@ -2204,7 +2207,10 @@ fn empty_trash_requires_confirmation_and_reports_pending_items() {
     let service = fixture.service();
 
     let unconfirmed = service.empty_trash(&WriteOptions::default()).unwrap_err();
-    assert_eq!(unconfirmed.code(), things_core::error::ErrorCode::Conflict);
+    assert_eq!(
+        unconfirmed.code(),
+        things_ai_core::error::ErrorCode::Conflict
+    );
 
     let planned = service
         .empty_trash(&WriteOptions {
@@ -2236,7 +2242,7 @@ fn deleting_an_item_that_is_already_trashed_reports_a_conflict() {
             },
         )
         .unwrap_err();
-    assert_eq!(error.code(), things_core::error::ErrorCode::Conflict);
+    assert_eq!(error.code(), things_ai_core::error::ErrorCode::Conflict);
     assert!(error.to_string().contains("already in Things Trash"));
 }
 
@@ -2271,12 +2277,18 @@ fn area_mutations_validate_targets_before_writing() {
             },
         )
         .unwrap_err();
-    assert_eq!(not_an_area.code(), things_core::error::ErrorCode::NotFound);
+    assert_eq!(
+        not_an_area.code(),
+        things_ai_core::error::ErrorCode::NotFound
+    );
 
     let unconfirmed = service
         .delete_area("Work", &WriteOptions::default())
         .unwrap_err();
-    assert_eq!(unconfirmed.code(), things_core::error::ErrorCode::Conflict);
+    assert_eq!(
+        unconfirmed.code(),
+        things_ai_core::error::ErrorCode::Conflict
+    );
 
     let renamed = service
         .rename_area(
@@ -2315,7 +2327,7 @@ fn status_changes_reject_repeating_items() {
             .unwrap_err();
         assert_eq!(
             error.code(),
-            things_core::error::ErrorCode::Unsupported,
+            things_ai_core::error::ErrorCode::Unsupported,
             "{target}"
         );
     }
@@ -2356,7 +2368,7 @@ fn legacy_repeater_column_is_treated_as_a_repeat_rule() {
             },
         )
         .unwrap_err();
-    assert_eq!(error.code(), things_core::error::ErrorCode::Unsupported);
+    assert_eq!(error.code(), things_ai_core::error::ErrorCode::Unsupported);
 }
 
 fn titles(items: &[Item]) -> Vec<&str> {

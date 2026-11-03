@@ -8,9 +8,9 @@ use serde::{Deserialize, Serialize};
 use crate::error::{Error, Result};
 
 pub const GROUP_CONTAINER: &str = "JLMPQHK86H.com.culturedcode.ThingsMac";
-pub const ENV_DATABASE: &str = "THINGSDB";
-pub const ENV_AUTH_TOKEN: &str = "THINGS_AUTH_TOKEN";
-pub const ENV_READ_ONLY: &str = "THINGS_READ_ONLY";
+pub const ENV_DATABASE: &str = "THINGS_AI_DB";
+pub const ENV_AUTH_TOKEN: &str = "THINGS_AI_AUTH_TOKEN";
+pub const ENV_READ_ONLY: &str = "THINGS_AI_READ_ONLY";
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
@@ -102,7 +102,7 @@ impl DatabaseSelection {
 }
 
 impl Config {
-    /// Load `~/.config/things/config.toml`, then environment variables.
+    /// Load `~/.config/things-ai/config.toml`, then environment variables.
     pub fn load() -> Result<Self> {
         let path = Self::config_path();
         let mut config = match fs::read_to_string(&path) {
@@ -133,8 +133,8 @@ impl Config {
     #[must_use]
     pub fn config_path() -> PathBuf {
         BaseDirs::new().map_or_else(
-            || PathBuf::from(".config/things/config.toml"),
-            |dirs| dirs.home_dir().join(".config/things/config.toml"),
+            || PathBuf::from(".config/things-ai/config.toml"),
+            |dirs| dirs.home_dir().join(".config/things-ai/config.toml"),
         )
     }
 
@@ -230,7 +230,7 @@ mod tests {
     #[test]
     fn config_path_is_xdg_style_on_macos() {
         let path = Config::config_path();
-        assert!(path.ends_with(".config/things/config.toml"));
+        assert!(path.ends_with(".config/things-ai/config.toml"));
         assert!(!path.to_string_lossy().contains("Application Support"));
     }
 }

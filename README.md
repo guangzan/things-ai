@@ -1,12 +1,12 @@
 <div align="center">
 
-# things
+# Things AI
 
 中文版本：[README.zh-CN.md](README.zh-CN.md)
 
 **AI-first Things 3 CLI and MCP server for macOS**
 
-[![CI](https://img.shields.io/github/actions/workflow/status/guangzan/things/ci.yml?style=flat-square&label=CI)](https://github.com/guangzan/things/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/guangzan/things-ai/ci.yml?style=flat-square&label=CI)](https://github.com/guangzan/things-ai/actions)
 [![Rust](https://img.shields.io/badge/Rust-1.89+-dea584?style=flat-square&logo=rust&logoColor=white)](https://www.rust-lang.org)
 [![Platform](https://img.shields.io/badge/Platform-macOS-black?style=flat-square&logo=apple&logoColor=white)](https://culturedcode.com/things/)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
@@ -15,7 +15,7 @@
 
 </div>
 
-`things` is a production-oriented command line interface and MCP server for
+`ta` is a production-oriented command line interface and MCP server for
 [Things 3](https://culturedcode.com/things/). It is written in Rust and built
 around a strict safety boundary:
 
@@ -56,17 +56,17 @@ Requires **macOS** and **Things 3**.
 ### Homebrew
 
 ```sh
-brew install guangzan/tap/things
+brew install guangzan/tap/things-ai
 ```
 
 This installs the prebuilt universal package for Apple Silicon and Intel Macs.
-Upgrade it with `brew upgrade things`.
+Upgrade it with `brew upgrade things-ai`.
 
 ### Shell installer
 
 ```sh
 curl --proto '=https' --tlsv1.2 -LsSf \
-  https://github.com/guangzan/things/releases/latest/download/things-installer.sh | sh
+  https://github.com/guangzan/things-ai/releases/latest/download/things-ai-installer.sh | sh
 ```
 
 ### From source
@@ -74,19 +74,40 @@ curl --proto '=https' --tlsv1.2 -LsSf \
 Source builds require **Rust 1.89+**:
 
 ```sh
-cargo install --path crates/things-cli
+cargo install --path crates/things-ai
 ```
 
 Or build a release binary:
 
 ```sh
-cargo build --release -p things
-./target/release/things --help
+cargo build --release -p things-ai
+./target/release/ta --help
 ```
+
+### Migrating from the old `things` CLI
+
+The command, Homebrew formula, config path, and environment variables changed
+without compatibility shims:
+
+```sh
+brew uninstall things
+brew install guangzan/tap/things-ai
+mv ~/.config/things ~/.config/things-ai   # if it exists
+```
+
+Replace `things` with `ta` in scripts and rename environment variables:
+
+| Old | New |
+|---|---|
+| `THINGSDB` | `THINGS_AI_DB` |
+| `THINGS_AUTH_TOKEN` | `THINGS_AI_AUTH_TOKEN` |
+| `THINGS_READ_ONLY` | `THINGS_AI_READ_ONLY` |
+| `THINGS_VERIFY_TIMEOUT_MS` | `THINGS_AI_VERIFY_TIMEOUT_MS` |
+| `THINGS_VERIFY_POLL_MS` | `THINGS_AI_VERIFY_POLL_MS` |
 
 ## macOS permissions
 
-1. Grant **Full Disk Access** to the terminal or app that runs `things`.
+1. Grant **Full Disk Access** to the terminal or app that runs `ta`.
    The Things database lives under `~/Library/Group Containers`.
 2. Open **Things → Settings → General** and enable **Things URLs**.
 3. If you use `set_status`, `delete`, or tag mutations, allow automation access
@@ -95,40 +116,40 @@ cargo build --release -p things
 Run the built-in diagnostic:
 
 ```sh
-things doctor
-things doctor --json
+ta doctor
+ta doctor --json
 ```
 
 ## Quick start
 
 ```sh
 # Read
-things today --json
-things search "quarterly" --json
-things show <id> --json
-things list --status open --tag focus --overdue --json
+ta today --json
+ta search "quarterly" --json
+ta show <id> --json
+ta list --status open --tag focus --overdue --json
 
 # Inspect a write without sending it
-things add "Review proposal" \
+ta add "Review proposal" \
   --when tomorrow --reminder 09:30 --deadline 2026-10-24 --tags work \
   --dry-run --json
 
 # Write and verify
-things add "Review proposal" --when tomorrow --reminder 09:30 --deadline 2026-10-24
-things edit <id> --append-notes "Ask legal for feedback"
-things edit <id> --reminder 08:45
-things done <id>
-things reopen <id>
+ta add "Review proposal" --when tomorrow --reminder 09:30 --deadline 2026-10-24
+ta edit <id> --append-notes "Ask legal for feedback"
+ta edit <id> --reminder 08:45
+ta done <id>
+ta reopen <id>
 
 # Tags, areas, and import
-things tag add "deep-work"
-things area add "Work"
-things import ./payload.json
-cat payload.json | things import -
+ta tag add "deep-work"
+ta area add "Work"
+ta import ./payload.json
+cat payload.json | ta import -
 
 # Destructive operations always require --yes
-things delete <id> --yes
-things empty-trash --yes
+ta delete <id> --yes
+ta empty-trash --yes
 ```
 
 Use `--format ndjson` for streaming-friendly list output.
@@ -139,21 +160,21 @@ Use `--read-only` to disable every mutation for a process.
 Run the server over stdio:
 
 ```sh
-things mcp
+ta mcp
 ```
 
 Example Codex configuration:
 
 ```toml
-[mcp_servers.things]
-command = "/absolute/path/to/things"
+[mcp_servers.things-ai]
+command = "/absolute/path/to/ta"
 args = ["mcp"]
 ```
 
 Read-only agent:
 
 ```sh
-things mcp --read-only
+ta mcp --read-only
 ```
 
 See [docs/MCP.md](docs/MCP.md) for the full tool reference.
@@ -161,14 +182,14 @@ See [docs/MCP.md](docs/MCP.md) for the full tool reference.
 ## Import
 
 ```sh
-things import payload.json
-cat payload.json | things import -
-things import payload.json --dry-run --json
+ta import payload.json
+cat payload.json | ta import -
+ta import payload.json --dry-run --json
 ```
 
 The payload must be a JSON array in the format accepted by `things:///json`.
 
-With verification enabled (the default), `things import --json` returns two
+With verification enabled (the default), `ta import --json` returns two
 per-item arrays in payload order:
 
 - `created` for every top-level or nested to-do/project
@@ -185,7 +206,7 @@ it.
 
 ## Configuration
 
-Config file: `~/.config/things/config.toml`
+Config file: `~/.config/things-ai/config.toml`
 
 ```toml
 read_only = false
@@ -208,14 +229,14 @@ Environment variables override the file:
 
 | Variable | Purpose |
 |---|---|
-| `THINGSDB` | Explicit `main.sqlite` path |
-| `THINGS_AUTH_TOKEN` | URL-scheme auth token |
-| `THINGS_READ_ONLY` | `1` / `true` disables writes |
-| `THINGS_VERIFY_TIMEOUT_MS` | Verification timeout |
-| `THINGS_VERIFY_POLL_MS` | Verification poll interval |
+| `THINGS_AI_DB` | Explicit `main.sqlite` path |
+| `THINGS_AI_AUTH_TOKEN` | URL-scheme auth token |
+| `THINGS_AI_READ_ONLY` | `1` / `true` disables writes |
+| `THINGS_AI_VERIFY_TIMEOUT_MS` | Verification timeout |
+| `THINGS_AI_VERIFY_POLL_MS` | Verification poll interval |
 
 If more than one `ThingsData-*` directory exists, database discovery refuses to
-guess. Set `--db` or `THINGSDB`.
+guess. Set `--db` or `THINGS_AI_DB`.
 
 ## Documentation
 
@@ -223,7 +244,7 @@ guess. Set `--db` or `THINGSDB`.
 - [MCP setup and tool reference](docs/MCP.md)
 - [Architecture and safety model](docs/ARCHITECTURE.md)
 - [Compatibility and limitations](docs/COMPATIBILITY.md)
-- [AI skill](skills/things/SKILL.md)
+- [AI skill](skills/things-ai/SKILL.md)
 
 ## Development
 

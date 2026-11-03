@@ -5,14 +5,14 @@ English: [MCP.md](MCP.md)
 通过 stdio 运行服务器：
 
 ```sh
-things mcp
+ta mcp
 ```
 
 Codex 配置示例：
 
 ```toml
-[mcp_servers.things]
-command = "/absolute/path/to/things"
+[mcp_servers.things-ai]
+command = "/absolute/path/to/ta"
 args = ["mcp"]
 ```
 
@@ -21,8 +21,8 @@ args = ["mcp"]
 ```json
 {
   "mcpServers": {
-    "things": {
-      "command": "/absolute/path/to/things",
+    "things-ai": {
+      "command": "/absolute/path/to/ta",
       "args": ["mcp"]
     }
   }
@@ -34,8 +34,8 @@ args = ["mcp"]
 ```json
 {
   "mcpServers": {
-    "things": {
-      "command": "/absolute/path/to/things",
+    "things-ai": {
+      "command": "/absolute/path/to/ta",
       "args": ["mcp", "--read-only"]
     }
   }
@@ -95,7 +95,7 @@ args = ["mcp"]
 
 ### 写入工具
 
-当 `read_only = true` 或使用 `things mcp --read-only` 时，这些工具会被隐藏。
+当 `read_only = true` 或使用 `ta mcp --read-only` 时，这些工具会被隐藏。
 
 | 工具 | 用途 |
 |---|---|

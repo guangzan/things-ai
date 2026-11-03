@@ -5,14 +5,14 @@
 Run the server over stdio:
 
 ```sh
-things mcp
+ta mcp
 ```
 
 Example Codex configuration:
 
 ```toml
-[mcp_servers.things]
-command = "/absolute/path/to/things"
+[mcp_servers.things-ai]
+command = "/absolute/path/to/ta"
 args = ["mcp"]
 ```
 
@@ -21,8 +21,8 @@ Example generic JSON configuration:
 ```json
 {
   "mcpServers": {
-    "things": {
-      "command": "/absolute/path/to/things",
+    "things-ai": {
+      "command": "/absolute/path/to/ta",
       "args": ["mcp"]
     }
   }
@@ -34,8 +34,8 @@ For a read-only agent:
 ```json
 {
   "mcpServers": {
-    "things": {
-      "command": "/absolute/path/to/things",
+    "things-ai": {
+      "command": "/absolute/path/to/ta",
       "args": ["mcp", "--read-only"]
     }
   }
@@ -125,7 +125,7 @@ tag name behave the same way.
 
 ### Write tools
 
-These are hidden when `read_only = true` or `things mcp --read-only` is used.
+These are hidden when `read_only = true` or `ta mcp --read-only` is used.
 
 | Tool | Purpose |
 |---|---|

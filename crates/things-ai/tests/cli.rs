@@ -96,13 +96,13 @@ impl Fixture {
     }
 
     fn command(&self) -> Command {
-        let mut command = Command::cargo_bin("things").expect("binary");
+        let mut command = Command::cargo_bin("ta").expect("binary");
         command
             .arg("--db")
             .arg(&self.database)
-            .env_remove("THINGSDB")
-            .env_remove("THINGS_READ_ONLY")
-            .env_remove("THINGS_AUTH_TOKEN");
+            .env_remove("THINGS_AI_DB")
+            .env_remove("THINGS_AI_READ_ONLY")
+            .env_remove("THINGS_AI_AUTH_TOKEN");
         command
     }
 
@@ -302,6 +302,7 @@ fn agent_brief_explains_repeating_template_resolution() {
         .expect("agent brief");
     assert!(output.status.success());
     let value: serde_json::Value = serde_json::from_slice(&output.stdout).expect("json");
+    assert_eq!(value["identity"], "things-ai");
     let principles = value["principles"].as_array().expect("principles");
     assert!(
         principles.iter().any(|principle| {
@@ -532,7 +533,7 @@ fn reminder_dry_runs_encode_the_schedule_and_preserve_an_existing_date() {
 fn edit_reminder_dry_run_preserves_the_existing_schedule() {
     let fixture = Fixture::new();
     let date = chrono::NaiveDate::from_ymd_opt(2026, 10, 19).expect("date");
-    let encoded = things_core::dates::encode_date(date);
+    let encoded = things_ai_core::dates::encode_date(date);
     let connection = rusqlite::Connection::open(&fixture.database).expect("fixture db");
     connection
         .execute(

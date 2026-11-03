@@ -20,17 +20,17 @@ English: [COMMANDS.md](COMMANDS.md)
 ## 视图
 
 ```sh
-things today [FILTERS]
-things inbox [FILTERS]
-things upcoming [FILTERS]
-things anytime [FILTERS]
-things someday [FILTERS]
-things logbook [FILTERS]
-things trash [FILTERS]
-things deadlines [FILTERS]
-things repeating [FILTERS]
-things projects [FILTERS]
-things list --view today [FILTERS]
+ta today [FILTERS]
+ta inbox [FILTERS]
+ta upcoming [FILTERS]
+ta anytime [FILTERS]
+ta someday [FILTERS]
+ta logbook [FILTERS]
+ta trash [FILTERS]
+ta deadlines [FILTERS]
+ta repeating [FILTERS]
+ta projects [FILTERS]
+ta list --view today [FILTERS]
 ```
 
 ## 过滤条件
@@ -70,7 +70,7 @@ things list --view today [FILTERS]
 
 没有 `--view`、也没有显式 `--trashed` / `--not-trashed` 的列表只覆盖活跃条目；传入 `--trashed`（或使用 `trash` 视图）才会包含 Things Trash 中的条目。
 
-重复模板，以及存储在重复项目模板内部的任务，属于 `things repeating`，不属于普通活跃列表。无论是否显式传入 `--not-trashed` 都成立：`things list --status open --not-trashed` 仍会省略它们。显式 `--trashed` 列表和 `logbook` 视图会按存储行原样报告，因此其中的模板会被包含。
+重复模板，以及存储在重复项目模板内部的任务，属于 `ta repeating`，不属于普通活跃列表。无论是否显式传入 `--not-trashed` 都成立：`ta list --status open --not-trashed` 仍会省略它们。显式 `--trashed` 列表和 `logbook` 视图会按存储行原样报告，因此其中的模板会被包含。
 
 当生成任务与其重复模板共享同一标题时，基于标题的查找（`show`、`edit`、`done`、`cancel` 和 `reopen`）会优先选择生成任务。要用 id 才能直接定位模板；只有模板独有的标题仍可解析到模板。
 
@@ -78,7 +78,7 @@ things list --view today [FILTERS]
 
 `--type heading` 会返回所有项目中的标题分组。标题分组永远不会出现在隐式列表中；需要按类型显式请求。
 
-列表、搜索和视图输出对每条备注最多携带 200 字符，并在文本被截断时设置 `notes_truncated: true`。传入 `--notes` 可在列表中拿到完整备注；`things show` 始终返回完整备注。
+列表、搜索和视图输出对每条备注最多携带 200 字符，并在文本被截断时设置 `notes_truncated: true`。传入 `--notes` 可在列表中拿到完整备注；`ta show` 始终返回完整备注。
 
 ### 默认排序
 
@@ -97,14 +97,14 @@ things list --view today [FILTERS]
 ## 读取与搜索
 
 ```sh
-things search "query" [FILTERS]
-things show <ID|PREFIX|TITLE>
-things area
-things area list
-things headings <PROJECT>
-things stats
-things agent-brief
-things doctor
+ta search "query" [FILTERS]
+ta show <ID|PREFIX|TITLE>
+ta area
+ta area list
+ta headings <PROJECT>
+ta stats
+ta agent-brief
+ta doctor
 ```
 
 歧义引用会返回带候选的错误。请使用更长的 id 前缀或完整 id。最多返回 25 个候选；`candidates_truncated: true` 表示还有更多匹配，应收窄引用，而不是假定列表完整。引用按完整 id、至少四位的 id 前缀、精确标题或唯一标题子串解析；Things Trash 中的条目仍可通过 id 访问，但永远不会按标题匹配。
@@ -114,7 +114,7 @@ things doctor
 ## 创建与编辑
 
 ```sh
-things add "Title" \
+ta add "Title" \
   --notes "Details" \
   --when tomorrow \
   --reminder 09:30 \
@@ -124,7 +124,7 @@ things add "Title" \
   --project <PROJECT> \
   --heading <HEADING>
 
-things edit <TARGET> \
+ta edit <TARGET> \
   --title "New title" \
   --append-notes "More detail" \
   --when tomorrow \
@@ -154,12 +154,12 @@ things edit <TARGET> \
 ## 项目
 
 ```sh
-things project add "Launch" \
+ta project add "Launch" \
   --area Work \
   --todo "Draft plan" \
   --todo "Review plan"
 
-things project edit <PROJECT> --append-notes "Kickoff notes"
+ta project edit <PROJECT> --append-notes "Kickoff notes"
 ```
 
 关闭或重新打开项目需要 `--yes`，因为它会影响项目内的每项任务。
@@ -167,26 +167,26 @@ things project edit <PROJECT> --append-notes "Kickoff notes"
 ## 状态与删除
 
 ```sh
-things done <TARGET>
-things cancel <TARGET>
-things reopen <TARGET>
-things delete <TARGET> --yes
-things empty-trash --yes
+ta done <TARGET>
+ta cancel <TARGET>
+ta reopen <TARGET>
+ta delete <TARGET> --yes
+ta empty-trash --yes
 ```
 
 `delete` 会把条目移入 Things Trash。它不会永久抹除数据库行。`empty-trash` 会永久删除 Trash 中的全部内容且无法撤销，因此始终需要 `--yes`。
 
 删除已经在 Trash 中的条目会返回 `conflict` 错误。Things 无法单独定位已入废纸篓的条目，因此 `empty-trash` 是移除它们的唯一方式。
 
-重复条目会拒绝 `when`、`reminder`、`deadline` 和状态变更；请使用 `things repeat <ITEM>` 在 Things 中编辑规则。
+重复条目会拒绝 `when`、`reminder`、`deadline` 和状态变更；请使用 `ta repeat <ITEM>` 在 Things 中编辑规则。
 
 ## 标签
 
 ```sh
-things tag list
-things tag add "deep-work"
-things tag rename <TAG> "new-name"
-things tag delete <TAG> --yes
+ta tag list
+ta tag add "deep-work"
+ta tag rename <TAG> "new-name"
+ta tag delete <TAG> --yes
 ```
 
 标签名不能包含逗号，因为 Things 用它作分隔符。
@@ -194,25 +194,25 @@ things tag delete <TAG> --yes
 ## 区域
 
 ```sh
-things area
-things area add "Work"
-things area rename <AREA> "Deep work"
-things area delete <AREA> --yes
+ta area
+ta area add "Work"
+ta area rename <AREA> "Deep work"
+ta area delete <AREA> --yes
 ```
 
-`things areas` 可作为 `things area list` 的别名。`area add` 在名称已匹配时会返回现有区域，因此不会创建重复项。删除区域会把它移入 Things Trash；其中的项目和待办不会被删除。
+`ta areas` 可作为 `ta area list` 的别名。`area add` 在名称已匹配时会返回现有区域，因此不会创建重复项。删除区域会把它移入 Things Trash；其中的项目和待办不会被删除。
 
 ## 导入
 
 ```sh
-things import payload.json
-cat payload.json | things import -
-things import payload.json --dry-run --json
+ta import payload.json
+cat payload.json | ta import -
+ta import payload.json --dry-run --json
 ```
 
 载荷必须是 `things:///json` 可接受的 JSON 数组。
 
-在默认启用校验时，`things import --json` 会为顶层与嵌套的待办 / 项目创建返回 `created` 数组，并为 `operation: update` 条目返回 `updated` 数组，二者都按载荷顺序排列。创建条目包含 `path`、`type`、`title`、`confirmed`，以及找到时的 `id`。更新条目还包含 `id`，以及在请求状态变更时的 `wanted_status` 与 `observed_status`。
+在默认启用校验时，`ta import --json` 会为顶层与嵌套的待办 / 项目创建返回 `created` 数组，并为 `operation: update` 条目返回 `updated` 数组，二者都按载荷顺序排列。创建条目包含 `path`、`type`、`title`、`confirmed`，以及找到时的 `id`。更新条目还包含 `id`，以及在请求状态变更时的 `wanted_status` 与 `observed_status`。
 
 创建条目可能报告 `not-found`、`ambiguous`、`no-verify` 或 `dry-run`。更新条目还可能额外报告 `target-not-found`、`status-not-applied`、`fields-not-verified` 或 `not-verified`。对创建而言，`confirmed` 只校验身份：它证明写入前快照之后出现了期望类型和标题的新行，并不证明每个属性都已应用。
 
@@ -225,9 +225,9 @@ things import payload.json --dry-run --json
 ## 打开与重复
 
 ```sh
-things open <TARGET>
-things open --view today
-things repeat <TARGET>
+ta open <TARGET>
+ta open --view today
+ta repeat <TARGET>
 ```
 
 `repeat` 会在 Things 中打开条目。直接写入重复规则是故意不支持的。
@@ -235,9 +235,9 @@ things repeat <TARGET>
 ## MCP 与配置
 
 ```sh
-things mcp
-things config path
-things config show
+ta mcp
+ta config path
+ta config show
 ```
 
 ## 退出码
