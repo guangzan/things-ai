@@ -1,12 +1,12 @@
 <div align="center">
 
-# things
+# Things AI
 
 English: [README.md](README.md)
 
 **面向 AI 的 macOS Things 3 CLI 与 MCP 服务器**
 
-[![CI](https://img.shields.io/github/actions/workflow/status/guangzan/things/ci.yml?style=flat-square&label=CI)](https://github.com/guangzan/things/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/guangzan/things-ai/ci.yml?style=flat-square&label=CI)](https://github.com/guangzan/things-ai/actions)
 [![Rust](https://img.shields.io/badge/Rust-1.89+-dea584?style=flat-square&logo=rust&logoColor=white)](https://www.rust-lang.org)
 [![Platform](https://img.shields.io/badge/Platform-macOS-black?style=flat-square&logo=apple&logoColor=white)](https://culturedcode.com/things/)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
@@ -15,7 +15,7 @@ English: [README.md](README.md)
 
 </div>
 
-`things` 是面向生产使用的 [Things 3](https://culturedcode.com/things/) 命令行工具与 MCP 服务器。它用 Rust 编写，并围绕严格的安全边界设计：
+`ta` 是面向生产使用的 [Things 3](https://culturedcode.com/things/) 命令行工具与 MCP 服务器。它用 Rust 编写，并围绕严格的安全边界设计：
 
 - **读取**对实时 Things SQLite 数据库以只读方式查询
 - **写入**通过官方 Things URL scheme 或 AppleScript 发送，再对照数据库校验
@@ -47,17 +47,17 @@ English: [README.md](README.md)
 ### Homebrew
 
 ```sh
-brew install guangzan/tap/things
+brew install guangzan/tap/things-ai
 ```
 
 安装的是面向 Apple Silicon 与 Intel Mac 的预编译版本。后续使用
-`brew upgrade things` 升级。
+`brew upgrade things-ai` 升级。
 
 ### Shell 安装脚本
 
 ```sh
 curl --proto '=https' --tlsv1.2 -LsSf \
-  https://github.com/guangzan/things/releases/latest/download/things-installer.sh | sh
+  https://github.com/guangzan/things-ai/releases/latest/download/things-ai-installer.sh | sh
 ```
 
 ### 从源码构建
@@ -65,19 +65,39 @@ curl --proto '=https' --tlsv1.2 -LsSf \
 源码构建需要 **Rust 1.89+**：
 
 ```sh
-cargo install --path crates/things-cli
+cargo install --path crates/things-ai
 ```
 
 或构建 release 二进制：
 
 ```sh
-cargo build --release -p things
-./target/release/things --help
+cargo build --release -p things-ai
+./target/release/ta --help
 ```
+
+### 从旧的 `things` CLI 迁移
+
+命令、Homebrew 公式、配置路径和环境变量都已变更，且不保留兼容层：
+
+```sh
+brew uninstall things
+brew install guangzan/tap/things-ai
+mv ~/.config/things ~/.config/things-ai   # 如果存在
+```
+
+请把脚本中的 `things` 替换为 `ta`，并重命名环境变量：
+
+| 旧变量 | 新变量 |
+|---|---|
+| `THINGSDB` | `THINGS_AI_DB` |
+| `THINGS_AUTH_TOKEN` | `THINGS_AI_AUTH_TOKEN` |
+| `THINGS_READ_ONLY` | `THINGS_AI_READ_ONLY` |
+| `THINGS_VERIFY_TIMEOUT_MS` | `THINGS_AI_VERIFY_TIMEOUT_MS` |
+| `THINGS_VERIFY_POLL_MS` | `THINGS_AI_VERIFY_POLL_MS` |
 
 ## macOS 权限
 
-1. 为运行 `things` 的终端或应用授予 **Full Disk Access**（完全磁盘访问权限）。
+1. 为运行 `ta` 的终端或应用授予 **Full Disk Access**（完全磁盘访问权限）。
    Things 数据库位于 `~/Library/Group Containers`。
 2. 打开 **Things → Settings → General**（设置 → 通用），启用 **Things URLs**。
 3. 如果会使用 `set_status`、`delete` 或标签变更，请在 macOS 提示时允许对 Things 的自动化访问。
@@ -85,40 +105,40 @@ cargo build --release -p things
 运行内置诊断：
 
 ```sh
-things doctor
-things doctor --json
+ta doctor
+ta doctor --json
 ```
 
 ## 快速开始
 
 ```sh
 # 读取
-things today --json
-things search "quarterly" --json
-things show <id> --json
-things list --status open --tag focus --overdue --json
+ta today --json
+ta search "quarterly" --json
+ta show <id> --json
+ta list --status open --tag focus --overdue --json
 
 # 先检查写入内容，不真正发送
-things add "Review proposal" \
+ta add "Review proposal" \
   --when tomorrow --reminder 09:30 --deadline 2026-10-24 --tags work \
   --dry-run --json
 
 # 写入并校验
-things add "Review proposal" --when tomorrow --reminder 09:30 --deadline 2026-10-24
-things edit <id> --append-notes "Ask legal for feedback"
-things edit <id> --reminder 08:45
-things done <id>
-things reopen <id>
+ta add "Review proposal" --when tomorrow --reminder 09:30 --deadline 2026-10-24
+ta edit <id> --append-notes "Ask legal for feedback"
+ta edit <id> --reminder 08:45
+ta done <id>
+ta reopen <id>
 
 # 标签、区域与导入
-things tag add "deep-work"
-things area add "Work"
-things import ./payload.json
-cat payload.json | things import -
+ta tag add "deep-work"
+ta area add "Work"
+ta import ./payload.json
+cat payload.json | ta import -
 
 # 破坏性操作始终需要 --yes
-things delete <id> --yes
-things empty-trash --yes
+ta delete <id> --yes
+ta empty-trash --yes
 ```
 
 列表输出若需便于流式处理，可使用 `--format ndjson`。
@@ -129,21 +149,21 @@ things empty-trash --yes
 通过 stdio 运行服务器：
 
 ```sh
-things mcp
+ta mcp
 ```
 
 Codex 配置示例：
 
 ```toml
-[mcp_servers.things]
-command = "/absolute/path/to/things"
+[mcp_servers.things-ai]
+command = "/absolute/path/to/ta"
 args = ["mcp"]
 ```
 
 只读 agent：
 
 ```sh
-things mcp --read-only
+ta mcp --read-only
 ```
 
 完整工具参考见 [docs/MCP.zh-CN.md](docs/MCP.zh-CN.md)。
@@ -151,14 +171,14 @@ things mcp --read-only
 ## 导入
 
 ```sh
-things import payload.json
-cat payload.json | things import -
-things import payload.json --dry-run --json
+ta import payload.json
+cat payload.json | ta import -
+ta import payload.json --dry-run --json
 ```
 
 载荷必须是 `things:///json` 可接受的 JSON 数组。
 
-在默认启用校验时，`things import --json` 会按载荷顺序返回两个按条目划分的数组：
+在默认启用校验时，`ta import --json` 会按载荷顺序返回两个按条目划分的数组：
 
 - `created`：每个顶层或嵌套的待办 / 项目
 - `updated`：每个 `operation: update`
@@ -171,7 +191,7 @@ things import payload.json --dry-run --json
 
 ## 配置
 
-配置文件：`~/.config/things/config.toml`
+配置文件：`~/.config/things-ai/config.toml`
 
 ```toml
 read_only = false
@@ -194,13 +214,13 @@ max_page_size = 100
 
 | 变量 | 用途 |
 |---|---|
-| `THINGSDB` | 显式指定 `main.sqlite` 路径 |
-| `THINGS_AUTH_TOKEN` | URL scheme 认证令牌 |
-| `THINGS_READ_ONLY` | `1` / `true` 禁用写入 |
-| `THINGS_VERIFY_TIMEOUT_MS` | 校验超时 |
-| `THINGS_VERIFY_POLL_MS` | 校验轮询间隔 |
+| `THINGS_AI_DB` | 显式指定 `main.sqlite` 路径 |
+| `THINGS_AI_AUTH_TOKEN` | URL scheme 认证令牌 |
+| `THINGS_AI_READ_ONLY` | `1` / `true` 禁用写入 |
+| `THINGS_AI_VERIFY_TIMEOUT_MS` | 校验超时 |
+| `THINGS_AI_VERIFY_POLL_MS` | 校验轮询间隔 |
 
-如果存在多个 `ThingsData-*` 目录，数据库发现流程会拒绝猜测。请设置 `--db` 或 `THINGSDB`。
+如果存在多个 `ThingsData-*` 目录，数据库发现流程会拒绝猜测。请设置 `--db` 或 `THINGS_AI_DB`。
 
 ## 文档
 
@@ -208,7 +228,7 @@ max_page_size = 100
 - [MCP 配置与工具参考](docs/MCP.zh-CN.md)
 - [架构与安全模型](docs/ARCHITECTURE.zh-CN.md)
 - [兼容性与限制](docs/COMPATIBILITY.zh-CN.md)
-- [AI skill](skills/things/SKILL.md)
+- [AI skill](skills/things-ai/SKILL.md)
 
 ## 开发
 

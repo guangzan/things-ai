@@ -1,19 +1,19 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/things-core",
-    "crates/things-cli",
-    "crates/things-mcp",
+    "crates/things-ai-core",
+    "crates/things-ai",
+    "crates/things-ai-mcp",
 ]
 
 [workspace.package]
-version = "0.1.2"
+version = "0.2.0"
 edition = "2024"
 rust-version = "1.89"
 license = "MIT"
-repository = "https://github.com/guangzan/things"
-homepage = "https://github.com/guangzan/things"
-description = "Production-grade, AI-first Things 3 CLI and MCP server"
+repository = "https://github.com/guangzan/things-ai"
+homepage = "https://github.com/guangzan/things-ai"
+description = "Things AI: production-grade, AI-first Things 3 CLI and MCP server"
 
 [workspace.dependencies]
 anyhow = "1.0"

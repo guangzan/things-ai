@@ -42,20 +42,20 @@ jobs:
       - name: Finalize formula
         env:
           VERSION: ${{ steps.release.outputs.version }}
-        run: ruby scripts/finalize-homebrew-formula.rb Formula/things.rb "$VERSION"
+        run: ruby scripts/finalize-homebrew-formula.rb Formula/things-ai.rb "$VERSION"
 
       - name: Validate formula
-        run: scripts/validate-homebrew-formula.sh Formula/things.rb
+        run: scripts/validate-homebrew-formula.sh Formula/things-ai.rb
 
       - name: Commit formula
         working-directory: tap
         run: |
           set -euo pipefail
-          git config user.name "things release"
+          git config user.name "things-ai release"
           git config user.email "release@invalid"
 
-          cp ../Formula/things.rb Formula/things.rb
-          git add Formula/things.rb
+          cp ../Formula/things-ai.rb Formula/things-ai.rb
+          git add Formula/things-ai.rb
           git diff --cached --quiet && exit 0
-          git commit -m "things ${{ steps.release.outputs.version }}"
+          git commit -m "things-ai ${{ steps.release.outputs.version }}"
           git push

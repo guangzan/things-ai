@@ -685,7 +685,7 @@ impl Service {
             && input.status.is_none()
         {
             return Err(Error::Conflict(format!(
-                "{:?} is closed; reopen it with `things reopen` before editing",
+                "{:?} is closed; reopen it with `ta reopen` before editing",
                 item.title()
             )));
         }
@@ -1092,7 +1092,7 @@ impl Service {
         };
         if already_trashed {
             return Err(Error::Conflict(format!(
-                "{target:?} is already in Things Trash; use `things empty-trash --yes` to remove it permanently"
+                "{target:?} is already in Things Trash; use `ta empty-trash --yes` to remove it permanently"
             )));
         }
         if !options.yes {

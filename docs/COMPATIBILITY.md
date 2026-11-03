@@ -10,7 +10,7 @@
 
 Things does not publish a stable SQLite schema. The reader uses defensive column
 defaults, but a future Things release can still change table or column names.
-Run `things doctor` after upgrading Things.
+Run `ta doctor` after upgrading Things.
 
 On startup the reader verifies that every table and column it relies on exists.
 A mismatch fails fast with an `unsupported` error naming the missing
@@ -88,13 +88,13 @@ rejected. Unknown tags are ignored by Things unless tag creation is enabled.
 ### Delete
 
 Delete is an `AppleScript` operation and enters Things Trash. A single item is
-never erased permanently; `things empty-trash --yes` is the only permanent
+never erased permanently; `ta empty-trash --yes` is the only permanent
 deletion, and it always needs explicit confirmation.
 
 Things' `AppleScript` dictionary cannot address an item that already sits in
 the Trash: `to do id "<id>"` fails with error `-1728`, and no command exposes
 the Trash contents individually. Deleting an already-trashed item therefore
-returns a `conflict` error that points at `things empty-trash --yes` instead
+returns a `conflict` error that points at `ta empty-trash --yes` instead
 of attempting the operation.
 
 ### Headings

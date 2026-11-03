@@ -1,5 +1,5 @@
 [package]
-name = "things"
+name = "things-ai-mcp"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -8,28 +8,24 @@ repository.workspace = true
 homepage.workspace = true
 description.workspace = true
 
-[[bin]]
-name = "things"
-path = "src/main.rs"
+[lib]
+name = "things_ai_mcp"
+path = "src/lib.rs"
 
 [lints]
 workspace = true
 
 [dependencies]
-anyhow.workspace = true
 chrono.workspace = true
-clap.workspace = true
+rmcp.workspace = true
+schemars.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-things-core = { path = "../things-core" }
-things-mcp = { path = "../things-mcp" }
+things-ai-core = { path = "../things-ai-core" }
 tokio.workspace = true
 tracing.workspace = true
-tracing-subscriber.workspace = true
 
 [dev-dependencies]
-assert_cmd.workspace = true
-predicates.workspace = true
 rusqlite.workspace = true
 tempfile.workspace = true
 

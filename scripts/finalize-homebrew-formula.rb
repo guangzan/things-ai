@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-formula_path = ARGV.fetch(0, "Formula/things.rb")
+formula_path = ARGV.fetch(0, "Formula/things-ai.rb")
 expected_version = ARGV[1]
 content = File.read(formula_path)
 
-unless content.match?(/^class Things < Formula$/)
-  abort "#{formula_path}: expected `class Things < Formula`"
+unless content.match?(/^class ThingsAi < Formula$/)
+  abort "#{formula_path}: expected `class ThingsAi < Formula`"
 end
 
 if content.match?(/^  test do$/)
@@ -21,7 +21,7 @@ unless content.match?(/^  test do$/)
   test_block = <<~'RUBY'
 
       test do
-        assert_match version.to_s, shell_output("#{bin}/things --version")
+        assert_match version.to_s, shell_output("#{bin}/ta --version")
       end
     end
   RUBY

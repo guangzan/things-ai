@@ -20,17 +20,17 @@ Global options can appear before or after a subcommand:
 ## Views
 
 ```sh
-things today [FILTERS]
-things inbox [FILTERS]
-things upcoming [FILTERS]
-things anytime [FILTERS]
-things someday [FILTERS]
-things logbook [FILTERS]
-things trash [FILTERS]
-things deadlines [FILTERS]
-things repeating [FILTERS]
-things projects [FILTERS]
-things list --view today [FILTERS]
+ta today [FILTERS]
+ta inbox [FILTERS]
+ta upcoming [FILTERS]
+ta anytime [FILTERS]
+ta someday [FILTERS]
+ta logbook [FILTERS]
+ta trash [FILTERS]
+ta deadlines [FILTERS]
+ta repeating [FILTERS]
+ta projects [FILTERS]
+ta list --view today [FILTERS]
 ```
 
 ## Filters
@@ -73,8 +73,8 @@ Listings without a `--view` and without an explicit `--trashed` /
 view) to include items in Things Trash.
 
 Repeating templates and the tasks stored inside repeating project templates
-belong to `things repeating`, not to ordinary active listings. This holds with
-or without an explicit `--not-trashed`: `things list --status open
+belong to `ta repeating`, not to ordinary active listings. This holds with
+or without an explicit `--not-trashed`: `ta list --status open
 --not-trashed` still omits them. An explicit `--trashed` listing and the
 `logbook` view report stored rows literally, so templates there are included.
 
@@ -94,7 +94,7 @@ an implicit listing; ask for them by type.
 
 List, search, and view output carries at most 200 characters of each note and
 sets `notes_truncated: true` when text was cut. Pass `--notes` to get full notes
-in a listing; `things show` always returns the complete note.
+in a listing; `ta show` always returns the complete note.
 
 ### Default ordering
 
@@ -115,14 +115,14 @@ never reorders equal keys. `--desc` returns the reverse of the selected order.
 ## Read and search
 
 ```sh
-things search "query" [FILTERS]
-things show <ID|PREFIX|TITLE>
-things area
-things area list
-things headings <PROJECT>
-things stats
-things agent-brief
-things doctor
+ta search "query" [FILTERS]
+ta show <ID|PREFIX|TITLE>
+ta area
+ta area list
+ta headings <PROJECT>
+ta stats
+ta agent-brief
+ta doctor
 ```
 
 Ambiguous references return an error with candidates. Use a longer id prefix or
@@ -139,7 +139,7 @@ and a tag share a name.
 ## Create and edit
 
 ```sh
-things add "Title" \
+ta add "Title" \
   --notes "Details" \
   --when tomorrow \
   --reminder 09:30 \
@@ -149,7 +149,7 @@ things add "Title" \
   --project <PROJECT> \
   --heading <HEADING>
 
-things edit <TARGET> \
+ta edit <TARGET> \
   --title "New title" \
   --append-notes "More detail" \
   --when tomorrow \
@@ -191,12 +191,12 @@ other edits in one command.
 ## Projects
 
 ```sh
-things project add "Launch" \
+ta project add "Launch" \
   --area Work \
   --todo "Draft plan" \
   --todo "Review plan"
 
-things project edit <PROJECT> --append-notes "Kickoff notes"
+ta project edit <PROJECT> --append-notes "Kickoff notes"
 ```
 
 Closing or reopening a project requires `--yes`, because it affects every task
@@ -205,11 +205,11 @@ inside the project.
 ## Status and deletion
 
 ```sh
-things done <TARGET>
-things cancel <TARGET>
-things reopen <TARGET>
-things delete <TARGET> --yes
-things empty-trash --yes
+ta done <TARGET>
+ta cancel <TARGET>
+ta reopen <TARGET>
+ta delete <TARGET> --yes
+ta empty-trash --yes
 ```
 
 `delete` moves the item to Things Trash. It does not permanently erase the
@@ -221,15 +221,15 @@ Things cannot address trashed items individually, so `empty-trash` is the only
 way to remove them.
 
 Repeating items reject `when`, `reminder`, `deadline`, and status changes; use
-`things repeat <ITEM>` to edit the rule in Things.
+`ta repeat <ITEM>` to edit the rule in Things.
 
 ## Tags
 
 ```sh
-things tag list
-things tag add "deep-work"
-things tag rename <TAG> "new-name"
-things tag delete <TAG> --yes
+ta tag list
+ta tag add "deep-work"
+ta tag rename <TAG> "new-name"
+ta tag delete <TAG> --yes
 ```
 
 Tag names cannot contain commas, which Things uses as a separator.
@@ -237,13 +237,13 @@ Tag names cannot contain commas, which Things uses as a separator.
 ## Areas
 
 ```sh
-things area
-things area add "Work"
-things area rename <AREA> "Deep work"
-things area delete <AREA> --yes
+ta area
+ta area add "Work"
+ta area rename <AREA> "Deep work"
+ta area delete <AREA> --yes
 ```
 
-`things areas` is accepted as an alias for `things area list`. `area add` returns
+`ta areas` is accepted as an alias for `ta area list`. `area add` returns
 an existing area when the name already matches, so it never creates a duplicate.
 Deleting an area moves it to Things Trash; the projects and to-dos inside it are
 not deleted.
@@ -251,15 +251,15 @@ not deleted.
 ## Import
 
 ```sh
-things import payload.json
-cat payload.json | things import -
-things import payload.json --dry-run --json
+ta import payload.json
+cat payload.json | ta import -
+ta import payload.json --dry-run --json
 ```
 
 The payload must be a JSON array in the format accepted by
 `things:///json`.
 
-With verification enabled (the default), `things import --json` returns a
+With verification enabled (the default), `ta import --json` returns a
 `created` array for top-level and nested to-do/project creates and an `updated`
 array for `operation: update` items, both in payload order. Created entries have
 `path`, `type`, `title`, `confirmed`, and, when found, `id`. Updated entries
@@ -296,9 +296,9 @@ does not duplicate it.
 ## Open and repeat
 
 ```sh
-things open <TARGET>
-things open --view today
-things repeat <TARGET>
+ta open <TARGET>
+ta open --view today
+ta repeat <TARGET>
 ```
 
 `repeat` opens the item in Things. Direct recurrence-rule writes are
@@ -307,9 +307,9 @@ intentionally unsupported.
 ## MCP and configuration
 
 ```sh
-things mcp
-things config path
-things config show
+ta mcp
+ta config path
+ta config show
 ```
 
 ## Exit codes

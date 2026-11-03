@@ -14,7 +14,7 @@ use rmcp::{
 use schemars::{JsonSchema, schema_for};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use serde_json::{Value, json};
-use things_core::{
+use things_ai_core::{
     Config, CreateTodo, EditItem, ItemQuery, ItemStatus, Service, WriteOptions,
     models::{ItemType, View},
     query::{Filter, SortField, SortOrder},
@@ -514,7 +514,7 @@ impl ThingsServer {
 impl ServerHandler for ThingsServer {
     fn get_info(&self) -> ServerConfig {
         ServerConfig::new(ServerCapabilities::builder().enable_tools().build())
-            .with_server_info(Implementation::new("things", env!("CARGO_PKG_VERSION")))
+            .with_server_info(Implementation::new("things-ai", env!("CARGO_PKG_VERSION")))
             .with_instructions(agent_brief().to_string())
     }
 
@@ -619,7 +619,7 @@ fn to_value<T: Serialize>(value: T) -> Result<Value, McpError> {
     serde_json::to_value(value).map_err(|error| McpError::internal_error(error.to_string(), None))
 }
 
-fn map_error(error: &things_core::Error) -> McpError {
+fn map_error(error: &things_ai_core::Error) -> McpError {
     let data = json!({
         "code": error.code().as_str(),
         "message": error.to_string(),
@@ -627,17 +627,18 @@ fn map_error(error: &things_core::Error) -> McpError {
         "candidates_truncated": error.candidates_truncated(),
     });
     match error.code() {
-        things_core::error::ErrorCode::InvalidInput
-        | things_core::error::ErrorCode::InvalidDate
-        | things_core::error::ErrorCode::Conflict => {
+        things_ai_core::error::ErrorCode::InvalidInput
+        | things_ai_core::error::ErrorCode::InvalidDate
+        | things_ai_core::error::ErrorCode::Conflict => {
             McpError::invalid_params(error.to_string(), Some(data))
         }
-        things_core::error::ErrorCode::NotFound | things_core::error::ErrorCode::Ambiguous => {
+        things_ai_core::error::ErrorCode::NotFound
+        | things_ai_core::error::ErrorCode::Ambiguous => {
             McpError::resource_not_found(error.to_string(), Some(data))
         }
-        things_core::error::ErrorCode::AuthRequired
-        | things_core::error::ErrorCode::Permission
-        | things_core::error::ErrorCode::Unsupported => {
+        things_ai_core::error::ErrorCode::AuthRequired
+        | things_ai_core::error::ErrorCode::Permission
+        | things_ai_core::error::ErrorCode::Unsupported => {
             McpError::invalid_request(error.to_string(), Some(data))
         }
         _ => McpError::internal_error(error.to_string(), Some(data)),
@@ -677,7 +678,7 @@ fn require_field(schema: &mut serde_json::Map<String, Value>, field: &str) {
 
 fn agent_brief() -> Value {
     json!({
-        "identity": "things",
+        "identity": "things-ai",
         "purpose": "Read and modify the user's local Things 3 data through a stable, verified interface.",
         "rules": [
             "Reads are SQLite read-only queries against the live Things database.",
@@ -1109,7 +1110,7 @@ pub struct CreateProjectInput {
     pub options: WriteInput,
 }
 
-impl From<CreateProjectInput> for things_core::service::CreateProject {
+impl From<CreateProjectInput> for things_ai_core::service::CreateProject {
     fn from(value: CreateProjectInput) -> Self {
         Self {
             title: value.title,

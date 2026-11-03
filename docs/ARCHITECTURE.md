@@ -4,15 +4,15 @@
 
 ## Crates
 
-`things-core` contains the domain model, read-only database access, URL-scheme
+`things-ai-core` contains the domain model, read-only database access, URL-scheme
 builders, `AppleScript` automation, verification, and the shared application
 service.
 
-`things` (in `crates/things-cli`) is the `clap` command line frontend. It maps
+`ta` (in `crates/things-ai`) is the `clap` command line frontend. It maps
 CLI arguments into core queries and write requests and renders text, JSON, or
 NDJSON.
 
-`things-mcp` exposes the same service over MCP stdio. Each request opens its own
+`things-ai-mcp` exposes the same service over MCP stdio. Each request opens its own
 read-only SQLite connection, avoiding cross-thread sharing of
 `rusqlite::Connection`.
 
